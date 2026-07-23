@@ -5,6 +5,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import nodemailer from "nodemailer";
+import ws from "ws";
 
 const SENDING_ENABLED = process.env.SENDING_ENABLED === "true";
 const RATE_LIMIT_PER_HOUR = parseInt(process.env.RATE_LIMIT_PER_HOUR || "0", 10);
@@ -12,7 +13,8 @@ const RATE_LIMIT_PER_DAY = parseInt(process.env.RATE_LIMIT_PER_DAY || "0", 10);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { realtime: { transport: ws } }
 );
 
 const transporter = nodemailer.createTransport({
