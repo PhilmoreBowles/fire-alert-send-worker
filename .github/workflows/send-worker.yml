@@ -18,11 +18,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SEND_FROM: ${{ secrets.SEND_FROM }}
           SENDING_ENABLED: ${{ vars.SENDING_ENABLED }}
           RATE_LIMIT_PER_HOUR: ${{ vars.RATE_LIMIT_PER_HOUR }}
           RATE_LIMIT_PER_DAY: ${{ vars.RATE_LIMIT_PER_DAY }}

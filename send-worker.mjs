@@ -4,7 +4,6 @@
 // all unless SENDING_ENABLED is exactly "true".
 
 import { createClient } from "@supabase/supabase-js";
-import nodemailer from "nodemailer";
 import ws from "ws";
 
 const SENDING_ENABLED = process.env.SENDING_ENABLED === "true";
@@ -17,15 +16,24 @@ const supabase = createClient(
   { realtime: { transport: ws } }
 );
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || "587", 10),
-  secure: process.env.SMTP_PORT === "465",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SEND_FROM = process.env.SEND_FROM || "Fire Adapted Park County Alerts <alerts@send.fap-co.org>";
+
+async function sendViaResend({ to, subject, html, text }) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from: SEND_FROM, to, subject, html, text }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Resend API error ${res.status}: ${errText}`);
+  }
+}
 
 async function countSentSince(hoursAgo) {
   const since = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
@@ -97,8 +105,7 @@ async function run() {
       const htmlWithFooter = `${alert.body_html}<hr><p style="font-size:12px;color:#888">You're receiving this because you signed up for Fire Adapted Park County alerts. <a href="${unsubscribeUrl}">Unsubscribe</a></p>`;
       const textWithFooter = `${alert.body_text || ""}\n\n---\nUnsubscribe: ${unsubscribeUrl}`;
 
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM,
+      await sendViaResend({
         to: subscriber.email,
         subject: alert.subject,
         html: htmlWithFooter,
