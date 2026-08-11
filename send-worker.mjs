@@ -17,7 +17,7 @@ const supabase = createClient(
 );
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const SEND_FROM = process.env.SEND_FROM || "Fire Adapted Park County Alerts <alerts@send.fap-co.org>";
+const SEND_FROM = process.env.SEND_FROM || "Fire Adapted Park County Alerts <alerts@fap-co.org>";
 
 async function sendViaResend({ to, subject, html, text }) {
   const res = await fetch("https://api.resend.com/emails", {
