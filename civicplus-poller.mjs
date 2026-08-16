@@ -52,9 +52,12 @@ async function run() {
     throw new Error(`Failed to fetch feed: ${res.status}`);
   }
   const xml = await res.text();
+  console.log("Raw XML length:", xml.length);
+  console.log("First 1000 chars of raw XML:", xml.slice(0, 1000));
 
   const parser = new XMLParser();
   const parsed = parser.parse(xml);
+  console.log("Top-level parsed keys:", Object.keys(parsed));
   const rawItems = parsed?.rss?.channel?.item;
   const items = Array.isArray(rawItems) ? rawItems : rawItems ? [rawItems] : [];
 
