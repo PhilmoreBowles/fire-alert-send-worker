@@ -58,6 +58,11 @@ async function run() {
   const rawItems = parsed?.rss?.channel?.item;
   const items = Array.isArray(rawItems) ? rawItems : rawItems ? [rawItems] : [];
 
+  console.log(`Raw item count: ${items.length}`);
+  if (items.length > 0) {
+    console.log("First raw item (debug):", JSON.stringify(items[0], null, 2));
+  }
+
   const normalized = items
     .map((item) => ({
       title: item.title ?? "(untitled)",
